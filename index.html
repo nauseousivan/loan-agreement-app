@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Loan Agreement</title>
+<title>LendsbyV Loan Agreement</title>
 
 <style>
 body {
@@ -15,8 +15,13 @@ body {
   max-width: 800px;
   margin: auto;
   background: white;
-  padding: 40px;
+  padding: 50px;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 5px;
 }
 
 h2 {
@@ -50,13 +55,17 @@ h2 {
 
 <div class="container" id="contract">
 
+<h1>LendsbyV</h1>
 <h2>LOAN AGREEMENT</h2>
 
+<p>Date Borrowed: <input class="input" id="dateBorrowed" type="date"></p>
+
 <p>
-I, <input class="input" id="name">, of legal age, residing at 
-<input class="input" id="address">, with contact number 
+I, <input class="input" id="name">, of legal age, currently residing at 
+<input class="input" id="address">, and staying at boarding house located at 
+<input class="input" id="boarding">, with contact number 
 <input class="input" id="phone">, do hereby acknowledge that I have received a loan amounting to 
-₱<input class="input" id="amount"> from the lender.
+₱<input class="input" id="amount"> from LendsbyV.
 </p>
 
 <p>
@@ -76,18 +85,20 @@ The purpose of this loan is:
 </p>
 
 <p>
-Valid Identification Presented: 
-<input class="input" id="idinfo" style="width:300px;">
+Valid Identification: 
+<input class="input" id="idtype" style="width:200px;">  
+ID Number: 
+<input class="input" id="idnumber" style="width:200px;">
 </p>
 
 <br>
 
 <p>
-I fully understand and agree that failure to pay on the agreed date may result in consequences including but not limited to public posting of my unpaid obligation, collection actions, and other necessary measures.
+I fully understand and agree that failure to pay on the agreed date may result in consequences including but not limited to collection actions, reporting of unpaid obligations, and other necessary measures deemed appropriate by the lender.
 </p>
 
 <p>
-I confirm that all the information provided is true and correct.
+I confirm that all information provided is true and correct and I voluntarily agree to all terms and conditions stated in this agreement.
 </p>
 
 <br><br>
@@ -98,7 +109,8 @@ I confirm that all the information provided is true and correct.
 
 <br><br>
 
-<button class="btn" onclick="downloadPDF()">Download as PDF</button>
+<button class="btn" onclick="downloadPDF()">Download PDF</button>
+<button class="btn" onclick="downloadPNG()">Download PNG</button>
 
 </div>
 
@@ -108,7 +120,7 @@ I confirm that all the information provided is true and correct.
 <script>
 const canvas = document.getElementById("signature-pad");
 
-// FIX SIGNATURE SIZE (important!!)
+// fix signature scaling
 function resizeCanvas() {
   const ratio = Math.max(window.devicePixelRatio || 1, 1);
   canvas.width = canvas.offsetWidth * ratio;
@@ -124,41 +136,44 @@ function clearSign() {
   signaturePad.clear();
 }
 
-// DOWNLOAD PDF (A4 SIZE!!)
+// LEGAL SIZE PDF (LONG PAPER)
 async function downloadPDF() {
   const { PDFDocument } = PDFLib;
   const pdfDoc = await PDFDocument.create();
 
-  // A4 SIZE
-  const page = pdfDoc.addPage([595, 842]);
+  // LEGAL SIZE: 612 x 1008
+  const page = pdfDoc.addPage([612, 1008]);
 
   const text = `
+LendsbyV
 LOAN AGREEMENT
 
-I, ${name.value}, residing at ${address.value}, with contact number ${phone.value}, 
-acknowledge that I received ₱${amount.value}.
+Date Borrowed: ${dateBorrowed.value}
+
+I, ${name.value}, residing at ${address.value}, staying at ${boarding.value}, 
+contact number ${phone.value}, acknowledge receiving ₱${amount.value}.
 
 I agree to pay with ${interest.value}% interest on or before ${dop.value}.
 
 GCash: ${gcash.value}
 Reason: ${reason.value}
-ID: ${idinfo.value}
 
-I agree to all terms and consequences including public posting if unpaid.
+ID: ${idtype.value} - ${idnumber.value}
+
+I agree to all terms including collection and reporting of unpaid obligations.
   `;
 
-  page.drawText(text, { x: 50, y: 700, size: 12 });
+  page.drawText(text, { x: 50, y: 900, size: 12 });
 
-  // signature
   const sigData = signaturePad.toDataURL();
   const sigBytes = await fetch(sigData).then(res => res.arrayBuffer());
   const sigImg = await pdfDoc.embedPng(sigBytes);
 
   page.drawImage(sigImg, {
     x: 50,
-    y: 100,
-    width: 200,
-    height: 80
+    y: 150,
+    width: 250,
+    height: 100
   });
 
   const pdfBytes = await pdfDoc.save();
@@ -166,10 +181,25 @@ I agree to all terms and consequences including public posting if unpaid.
   const blob = new Blob([pdfBytes], { type: "application/pdf" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "LoanAgreement.pdf";
+  link.download = "LendsbyV_LoanAgreement.pdf";
   link.click();
 }
+
+// PNG DOWNLOAD
+function downloadPNG() {
+  const element = document.getElementById("contract");
+
+  html2canvas(element).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "LendsbyV_LoanAgreement.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
 </script>
+
+<!-- needed for PNG -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 </body>
 </html>
