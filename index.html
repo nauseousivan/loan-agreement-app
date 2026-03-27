@@ -19,14 +19,8 @@ body {
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-h1 {
+h1, h2 {
   text-align: center;
-  margin-bottom: 5px;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 30px;
 }
 
 .input {
@@ -61,44 +55,42 @@ h2 {
 <p>Date Borrowed: <input class="input" id="dateBorrowed" type="date"></p>
 
 <p>
-I, <input class="input" id="name">, of legal age, currently residing at 
-<input class="input" id="address">, and staying at boarding house located at 
+I, <input class="input" id="name">, residing at 
+<input class="input" id="address">, staying at boarding house 
 <input class="input" id="boarding">, with contact number 
-<input class="input" id="phone">, do hereby acknowledge that I have received a loan amounting to 
-₱<input class="input" id="amount"> from LendsbyV.
+<input class="input" id="phone">, acknowledge receiving ₱
+<input class="input" id="amount"> from LendsbyV.
 </p>
 
 <p>
-I agree to pay the said amount with an interest rate of 
-<input class="input" id="interest">% on or before 
-<input class="input" id="dop">.
+Computed Interest Rate: <strong><span id="rateDisplay">--</span>%</strong><br>
+Loan Duration: <strong><span id="daysDisplay">--</span> day(s)</strong><br>
+Total Amount to Pay: <strong>₱<span id="totalDisplay">--</span></strong>
 </p>
 
 <p>
-The loaned amount will be sent via GCash account 
+I agree to pay the total amount on or before 
+<input class="input" id="dop"> via GCash account 
 <input class="input" id="gcash">.
 </p>
 
 <p>
-The purpose of this loan is: 
-<input class="input" id="reason" style="width:300px;">
+Purpose: <input class="input" id="reason" style="width:300px;">
 </p>
 
 <p>
-Valid Identification: 
-<input class="input" id="idtype" style="width:200px;">  
-ID Number: 
-<input class="input" id="idnumber" style="width:200px;">
+Valid ID: <input class="input" id="idtype">  
+ID Number: <input class="input" id="idnumber">
 </p>
 
 <br>
 
 <p>
-I fully understand and agree that failure to pay on the agreed date may result in consequences including but not limited to collection actions, reporting of unpaid obligations, and other necessary measures deemed appropriate by the lender.
+I fully understand that failure to pay may result in collection actions and lawful reporting of unpaid obligations.
 </p>
 
 <p>
-I confirm that all information provided is true and correct and I voluntarily agree to all terms and conditions stated in this agreement.
+I confirm all details are true and I agree to all terms stated.
 </p>
 
 <br><br>
@@ -116,11 +108,12 @@ I confirm that all information provided is true and correct and I voluntarily ag
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.0/signature_pad.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
 const canvas = document.getElementById("signature-pad");
 
-// fix signature scaling
+// FIX SIGNATURE
 function resizeCanvas() {
   const ratio = Math.max(window.devicePixelRatio || 1, 1);
   canvas.width = canvas.offsetWidth * ratio;
@@ -136,70 +129,103 @@ function clearSign() {
   signaturePad.clear();
 }
 
-// LEGAL SIZE PDF (LONG PAPER)
+// CALCULATE LOAN
+function calculateLoan() {
+  const amount = parseFloat(document.getElementById("amount").value);
+  const start = new Date(document.getElementById("dateBorrowed").value);
+  const end = new Date(document.getElementById("dop").value);
+
+  if (!amount || !start || !end) return;
+
+  const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+
+  if (days < 1 || days > 5) {
+    document.getElementById("daysDisplay").innerText = "Invalid";
+    return;
+  }
+
+  let rate = 0;
+
+  if (amount >= 100 && amount <= 799) {
+    if (days==5) rate=0.55;
+    if (days==4) rate=0.45;
+    if (days==3) rate=0.35;
+    if (days==2) rate=0.25;
+    if (days==1) rate=0.15;
+  } else if (amount >= 800 && amount <= 1499) {
+    if (days==5) rate=0.50;
+    if (days==4) rate=0.41;
+    if (days==3) rate=0.33;
+    if (days==2) rate=0.25;
+    if (days==1) rate=0.15;
+  } else if (amount >= 1500 && amount <= 2999) {
+    if (days==5) rate=0.45;
+    if (days==4) rate=0.39;
+    if (days==3) rate=0.33;
+    if (days==2) rate=0.27;
+    if (days==1) rate=0.18;
+  } else if (amount >= 3000) {
+    if (days==5) rate=0.40;
+    if (days==4) rate=0.35;
+    if (days==3) rate=0.30;
+    if (days==2) rate=0.25;
+    if (days==1) rate=0.18;
+  }
+
+  const total = amount + (amount * rate);
+
+  document.getElementById("rateDisplay").innerText = (rate*100).toFixed(0);
+  document.getElementById("totalDisplay").innerText = total.toFixed(2);
+  document.getElementById("daysDisplay").innerText = days;
+}
+
+["amount","dateBorrowed","dop"].forEach(id => {
+  document.getElementById(id).addEventListener("input", calculateLoan);
+});
+
+// PDF DOWNLOAD (LEGAL SIZE)
 async function downloadPDF() {
   const { PDFDocument } = PDFLib;
   const pdfDoc = await PDFDocument.create();
-
-  // LEGAL SIZE: 612 x 1008
   const page = pdfDoc.addPage([612, 1008]);
 
   const text = `
-LendsbyV
-LOAN AGREEMENT
+LendsbyV Loan Agreement
 
-Date Borrowed: ${dateBorrowed.value}
-
-I, ${name.value}, residing at ${address.value}, staying at ${boarding.value}, 
-contact number ${phone.value}, acknowledge receiving ₱${amount.value}.
-
-I agree to pay with ${interest.value}% interest on or before ${dop.value}.
-
-GCash: ${gcash.value}
-Reason: ${reason.value}
-
-ID: ${idtype.value} - ${idnumber.value}
-
-I agree to all terms including collection and reporting of unpaid obligations.
+Name: ${name.value}
+Amount: ₱${amount.value}
+Interest: ${rateDisplay.innerText}%
+Total: ₱${totalDisplay.innerText}
+Days: ${daysDisplay.innerText}
+Due: ${dop.value}
   `;
 
-  page.drawText(text, { x: 50, y: 900, size: 12 });
+  page.drawText(text, { x:50, y:900, size:12 });
 
   const sigData = signaturePad.toDataURL();
-  const sigBytes = await fetch(sigData).then(res => res.arrayBuffer());
+  const sigBytes = await fetch(sigData).then(res=>res.arrayBuffer());
   const sigImg = await pdfDoc.embedPng(sigBytes);
 
-  page.drawImage(sigImg, {
-    x: 50,
-    y: 150,
-    width: 250,
-    height: 100
-  });
+  page.drawImage(sigImg, { x:50, y:150, width:250, height:100 });
 
   const pdfBytes = await pdfDoc.save();
-
-  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const blob = new Blob([pdfBytes], { type:"application/pdf" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "LendsbyV_LoanAgreement.pdf";
+  link.download = "LendsbyV_Loan.pdf";
   link.click();
 }
 
 // PNG DOWNLOAD
 function downloadPNG() {
-  const element = document.getElementById("contract");
-
-  html2canvas(element).then(canvas => {
+  html2canvas(document.getElementById("contract")).then(canvas => {
     const link = document.createElement("a");
-    link.download = "LendsbyV_LoanAgreement.png";
+    link.download = "LendsbyV_Loan.png";
     link.href = canvas.toDataURL();
     link.click();
   });
 }
 </script>
-
-<!-- needed for PNG -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 </body>
 </html>
