@@ -2,164 +2,173 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Official Loan Agreement</title>
+<title>Loan Agreement</title>
+
 <style>
-body { font-family: Arial, sans-serif; margin: 20px; background:#f5f5f5; }
-.container { background:#fff; padding:20px; border-radius:10px; max-width:600px; margin:auto; box-shadow: 0 0 10px rgba(0,0,0,0.2);}
-h2 { text-align:center; }
-label { display:block; margin-top:10px; font-weight:bold; }
-input, textarea { width:100%; padding:8px; margin-top:5px; font-size:16px; border-radius:5px; border:1px solid #ccc; }
-#signature-pad { border:2px solid #000; border-radius:8px; width:100%; height:200px; margin-top:10px; }
-button { margin-top:15px; padding:10px 20px; font-size:16px; border:none; border-radius:5px; cursor:pointer; }
-#agreement-preview { margin-top:20px; padding:10px; border:1px solid #ccc; white-space: pre-line; text-align:left; font-size:14px; }
+body {
+  font-family: "Times New Roman", serif;
+  background: #f0f0f0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  padding: 40px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.input {
+  border: none;
+  border-bottom: 1px solid black;
+  font-family: inherit;
+  font-size: 16px;
+  width: 200px;
+}
+
+#signature-pad {
+  border: 1px solid black;
+  width: 100%;
+  height: 150px;
+}
+
+.btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
 </style>
 </head>
+
 <body>
 
-<div class="container">
-<h2>Official Loan Agreement</h2>
+<div class="container" id="contract">
 
-<label>Full Name</label><input type="text" id="fullName" placeholder="Juan Dela Cruz">
-<label>Phone Number</label><input type="text" id="phone" placeholder="09123456789">
-<label>Complete Address</label><input type="text" id="address" placeholder="Street, City, Province">
-<label>GCash Account (Number/Name)</label><input type="text" id="gcash" placeholder="09123456789 / Juan Dela Cruz">
-<label>Loan Amount (₱)</label><input type="number" id="amount" placeholder="5000">
-<label>Interest Rate (%)</label><input type="number" id="interest" placeholder="5">
-<label>Date of Payment (DOP)</label><input type="date" id="dop">
-<label>Reason for Loan</label><input type="text" id="reason" placeholder="Personal expenses">
-<label>ID with ID Number</label><input type="text" id="idinfo" placeholder="Driver's License / 123456789">
+<h2>LOAN AGREEMENT</h2>
 
-<h3>Signature</h3>
+<p>
+I, <input class="input" id="name">, of legal age, residing at 
+<input class="input" id="address">, with contact number 
+<input class="input" id="phone">, do hereby acknowledge that I have received a loan amounting to 
+₱<input class="input" id="amount"> from the lender.
+</p>
+
+<p>
+I agree to pay the said amount with an interest rate of 
+<input class="input" id="interest">% on or before 
+<input class="input" id="dop">.
+</p>
+
+<p>
+The loaned amount will be sent via GCash account 
+<input class="input" id="gcash">.
+</p>
+
+<p>
+The purpose of this loan is: 
+<input class="input" id="reason" style="width:300px;">
+</p>
+
+<p>
+Valid Identification Presented: 
+<input class="input" id="idinfo" style="width:300px;">
+</p>
+
+<br>
+
+<p>
+I fully understand and agree that failure to pay on the agreed date may result in consequences including but not limited to public posting of my unpaid obligation, collection actions, and other necessary measures.
+</p>
+
+<p>
+I confirm that all the information provided is true and correct.
+</p>
+
+<br><br>
+
+<p>Borrower's Signature:</p>
 <canvas id="signature-pad"></canvas>
-<button id="clear">Clear Signature</button>
+<button class="btn" onclick="clearSign()">Clear</button>
 
-<h3>Agreement Preview</h3>
-<div id="agreement-preview"></div>
+<br><br>
 
-<button id="download-png">Download PNG</button>
-<button id="download-pdf">Download PDF</button>
+<button class="btn" onclick="downloadPDF()">Download as PDF</button>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.0/signature_pad.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
 <script>
-const canvas = document.getElementById('signature-pad');
+const canvas = document.getElementById("signature-pad");
+
+// FIX SIGNATURE SIZE (important!!)
+function resizeCanvas() {
+  const ratio = Math.max(window.devicePixelRatio || 1, 1);
+  canvas.width = canvas.offsetWidth * ratio;
+  canvas.height = canvas.offsetHeight * ratio;
+  canvas.getContext("2d").scale(ratio, ratio);
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
 const signaturePad = new SignaturePad(canvas);
-document.getElementById('clear').addEventListener('click', () => signaturePad.clear());
 
-function updatePreview(){
-  const fullName = document.getElementById('fullName').value;
-  const phone = document.getElementById('phone').value;
-  const address = document.getElementById('address').value;
-  const gcash = document.getElementById('gcash').value;
-  const amount = document.getElementById('amount').value;
-  const interest = document.getElementById('interest').value;
-  const dop = document.getElementById('dop').value;
-  const reason = document.getElementById('reason').value;
-  const idinfo = document.getElementById('idinfo').value;
-
-  const text = `
-OFFICIAL LOAN AGREEMENT
-
-Full Name: ${fullName}
-Phone: ${phone}
-Address: ${address}
-GCash Account: ${gcash}
-Loan Amount: ₱${amount}
-Interest Rate: ${interest}%
-Date of Payment (DOP): ${dop}
-Reason for Loan: ${reason}
-ID Info: ${idinfo}
-
-By signing below, I acknowledge that I have received the loan and agree to pay the amount with the stated interest by the due date.
-I understand that failure to pay may result in consequences including but not limited to:
-- Public posting of my default
-- Collection actions
-
-I confirm that all information above is correct and agree to these terms.
-  `;
-  document.getElementById('agreement-preview').innerText = text;
+function clearSign() {
+  signaturePad.clear();
 }
 
-['fullName','phone','address','gcash','amount','interest','dop','reason','idinfo'].forEach(id => {
-  document.getElementById(id).addEventListener('input', updatePreview);
-});
-
-updatePreview();
-
-// Download PNG
-document.getElementById('download-png').addEventListener('click', () => {
-  const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = 600;
-  tempCanvas.height = 800;
-  const ctx = tempCanvas.getContext('2d');
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0,0,tempCanvas.width,tempCanvas.height);
-  ctx.font = "14px Arial";
-  ctx.fillStyle = "#000";
-  const text = document.getElementById('agreement-preview').innerText;
-  const lines = text.split('\n');
-  lines.forEach((line,i) => ctx.fillText(line,10,20 + i*20));
-
-  ctx.drawImage(signaturePad.canvas, 10, tempCanvas.height - 210, 560, 200);
-
-  const link = document.createElement('a');
-  link.download = 'LoanAgreement.png';
-  link.href = tempCanvas.toDataURL();
-  link.click();
-});
-
-// Download PDF
-document.getElementById('download-pdf').addEventListener('click', async () => {
-  const { PDFDocument, rgb } = PDFLib;
+// DOWNLOAD PDF (A4 SIZE!!)
+async function downloadPDF() {
+  const { PDFDocument } = PDFLib;
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([600,800]);
-  const { height } = page.getSize();
 
-  const fullName = document.getElementById('fullName').value;
-  const phone = document.getElementById('phone').value;
-  const address = document.getElementById('address').value;
-  const gcash = document.getElementById('gcash').value;
-  const amount = document.getElementById('amount').value;
-  const interest = document.getElementById('interest').value;
-  const dop = document.getElementById('dop').value;
-  const reason = document.getElementById('reason').value;
-  const idinfo = document.getElementById('idinfo').value;
+  // A4 SIZE
+  const page = pdfDoc.addPage([595, 842]);
 
   const text = `
-OFFICIAL LOAN AGREEMENT
+LOAN AGREEMENT
 
-Full Name: ${fullName}
-Phone: ${phone}
-Address: ${address}
-GCash Account: ${gcash}
-Loan Amount: ₱${amount}
-Interest Rate: ${interest}%
-Date of Payment (DOP): ${dop}
-Reason for Loan: ${reason}
-ID Info: ${idinfo}
+I, ${name.value}, residing at ${address.value}, with contact number ${phone.value}, 
+acknowledge that I received ₱${amount.value}.
 
-By signing below, I acknowledge that I have received the loan and agree to pay the amount with the stated interest by the due date.
-I understand that failure to pay may result in consequences including but not limited to:
-- Public posting of my default
-- Collection actions
+I agree to pay with ${interest.value}% interest on or before ${dop.value}.
 
-I confirm that all information above is correct and agree to these terms.
+GCash: ${gcash.value}
+Reason: ${reason.value}
+ID: ${idinfo.value}
+
+I agree to all terms and consequences including public posting if unpaid.
   `;
-  page.drawText(text, { x:20, y: height - 40, size:12, color: rgb(0,0,0) });
 
-  const sigDataUrl = signaturePad.toDataURL();
-  const sigImageBytes = await fetch(sigDataUrl).then(res=>res.arrayBuffer());
-  const sigImage = await pdfDoc.embedPng(sigImageBytes);
-  page.drawImage(sigImage, { x:20, y:50, width:560, height:200 });
+  page.drawText(text, { x: 50, y: 700, size: 12 });
+
+  // signature
+  const sigData = signaturePad.toDataURL();
+  const sigBytes = await fetch(sigData).then(res => res.arrayBuffer());
+  const sigImg = await pdfDoc.embedPng(sigBytes);
+
+  page.drawImage(sigImg, {
+    x: 50,
+    y: 100,
+    width: 200,
+    height: 80
+  });
 
   const pdfBytes = await pdfDoc.save();
-  const blob = new Blob([pdfBytes], { type:'application/pdf' });
-  const link = document.createElement('a');
+
+  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = 'LoanAgreement.pdf';
+  link.download = "LoanAgreement.pdf";
   link.click();
-});
+}
 </script>
 
 </body>
