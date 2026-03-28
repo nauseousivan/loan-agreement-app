@@ -128,10 +128,7 @@ function resizeCanvas() {
   canvas.height = canvas.offsetHeight * ratio;
   canvas.getContext("2d").scale(ratio, ratio);
 }
-
-window.onload = () => {
-  resizeCanvas();
-};
+window.onload = resizeCanvas;
 
 const signaturePad = new SignaturePad(canvas);
 
@@ -141,27 +138,27 @@ function clearSign() {
 
 // CALCULATION
 function calculateLoan() {
-  const amount = parseFloat(amount.value);
+  const amountVal = parseFloat(amount.value);
   const start = new Date(dateBorrowed.value);
   const end = new Date(dop.value);
 
-  if (!amount || !dateBorrowed.value || !dop.value) return;
+  if (!amountVal || !dateBorrowed.value || !dop.value) return;
 
-  const days = Math.ceil((end - start) / (1000*60*60*24));
+  const days = Math.ceil((end - start)/(1000*60*60*24));
 
   let rate = 0;
 
-  if (amount >= 100 && amount <= 799) {
+  if (amountVal >= 100 && amountVal <= 799) {
     rate = [0,0.15,0.25,0.35,0.45,0.55][days];
-  } else if (amount <= 1499) {
+  } else if (amountVal <= 1499) {
     rate = [0,0.15,0.25,0.33,0.41,0.50][days];
-  } else if (amount <= 2999) {
+  } else if (amountVal <= 2999) {
     rate = [0,0.18,0.27,0.33,0.39,0.45][days];
   } else {
     rate = [0,0.18,0.25,0.30,0.35,0.40][days];
   }
 
-  const total = amount + (amount * rate);
+  const total = amountVal + (amountVal * rate);
 
   rateDisplay.innerText = (rate*100).toFixed(0);
   totalDisplay.innerText = total.toFixed(2);
@@ -172,22 +169,19 @@ function calculateLoan() {
   document.getElementById(id).addEventListener("input", calculateLoan);
 });
 
-// PDF
+// PDF FIXED
 async function downloadPDF() {
   const { PDFDocument } = PDFLib;
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([612,1008]);
 
-  const text = `
-LendsbyV Loan Agreement
-
+  const text = `LendsbyV Loan Agreement
 Name: ${name.value}
 Amount: ₱${amount.value}
 Interest: ${rateDisplay.innerText}%
 Total: ₱${totalDisplay.innerText}
 Days: ${daysDisplay.innerText}
-Due: ${dop.value}
-`;
+Due: ${dop.value}`;
 
   page.drawText(text, { x:50, y:900, size:12 });
 
@@ -207,7 +201,7 @@ Due: ${dop.value}
   document.body.removeChild(link);
 }
 
-// PNG
+// PNG FIXED
 function downloadPNG() {
   document.body.classList.add("downloading");
 
@@ -225,7 +219,7 @@ function downloadPNG() {
   })
   .catch(()=>{
     document.body.classList.remove("downloading");
-    alert("Download failed, try again");
+    alert("Download failed");
   });
 }
 </script>
