@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>LendsbyV Loan Agreement - App Edition</title>
-
 <style>
+/* -- Reset and Global Stylings -- */
 body {
-  background: #f0f0f0;
+  background: #f0f0f0 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4uRkAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAlQTFRF8fHxAAAANvb6YwAAAAn0Uk5T/////////+M27lYAAAAWElEQVR42mJgwAQMDIxADADEDIQMjEAAMQgAMQgYmJgAEC4AMTAAEYgAMQgYmJgAEC4AMTAAEYgAMQgYmJgAEC4AMTAAEYgAMQgYmJgAEC4AMTAAEYgAMDAwAALwAEM4AEMAAAAASUVORK5CYII=') repeat;
   margin: 0;
   padding: 40px;
+  box-sizing: border-box;
 }
 
 .container {
@@ -18,39 +19,115 @@ body {
   padding: 60px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
   border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #e0d0b0;
 }
 
-h1, h2 {
+.container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png'); 
+  opacity: 0.2;
+  pointer-events: none; 
+}
+
+h1 {
+  font-family: 'Times New Roman', Times, serif;
   text-align: center;
+  font-size: 32px;
+  margin-top: 0;
+  color: #3e2e1e;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+h2 {
+  font-family: 'Courier New', Courier, monospace;
+  text-align: center;
+  font-size: 20px;
+  color: #5d4a36;
+  margin-bottom: 30px;
+}
+
+p {
+  line-height: 1.6;
+  color: #2c1f0d;
 }
 
 .input {
   border: none;
   border-bottom: 2px solid #a38b69;
   background: transparent;
+  font-family: inherit;
   font-size: 16px;
+  color: #000;
   width: 190px;
+  padding: 2px 5px;
+  margin-bottom: 5px;
 }
 
-#signature-pad {
-  border: 1px solid #c7b08b;
+input[type="date"].input {
+  color: #444;
+}
+
+strong {
+  font-family: Arial, sans-serif;
+  color: #6a1a1a;
+}
+
+#signature-pad-wrapper {
+  margin-top: 15px;
+  position: relative;
   width: 100%;
   height: 150px;
 }
 
+#signature-pad {
+  border: 1px solid #c7b08b;
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  background: #fdfdfd;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
 .btn {
   margin-top: 15px;
+  margin-right: 10px;
   padding: 12px 25px;
   cursor: pointer;
   border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   color: #fff;
   border-radius: 30px;
-  background: #8b6f4e;
+  background: linear-gradient(145deg, #a38b69, #7e694f);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2), inset 0 2px 3px rgba(255,255,255,0.1);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.btn:hover {
+  background: linear-gradient(145deg, #bd9f7c, #9c8260);
+  transform: translateY(-2px);
 }
 
 .download-section {
   text-align: right;
   margin-top: 40px;
+}
+
+/* Hide buttons during capture/print */
+@media print {
+  .btn, .download-section { display: none !important; }
 }
 
 body.downloading .btn {
@@ -62,51 +139,50 @@ body.downloading .btn {
 <body>
 
 <div class="container" id="contract">
+  <h1>LendsbyV</h1>
+  <h2>LOAN AGREEMENT</h2>
 
-<h1>LendsbyV</h1>
-<h2>LOAN AGREEMENT</h2>
+  <p>Date Borrowed: <input class="input" id="dateBorrowed" type="date"></p>
 
-<p>Date Borrowed: <input class="input" id="dateBorrowed" type="date"></p>
+  <p>
+  I, <input class="input" id="name" placeholder="Full Name">, residing at 
+  <input class="input" id="address" placeholder="Residential Address">, staying at boarding house 
+  <input class="input" id="boarding" placeholder="Name of House (if applicable)">, with contact number 
+  <input class="input" id="phone" placeholder="Phone Number">, acknowledge receiving ₱
+  <input class="input" id="amount" type="number" step="100" placeholder="Loan Amount"> from LendsbyV.
+  </p>
 
-<p>
-I, <input class="input" id="name">, residing at 
-<input class="input" id="address">, staying at boarding house 
-<input class="input" id="boarding">, with contact number 
-<input class="input" id="phone">, acknowledge receiving ₱
-<input class="input" id="amount" type="number"> from LendsbyV.
-</p>
+  <p>
+  Computed Interest Rate: <strong><span id="rateDisplay">--</span>%</strong><br>
+  Loan Duration: <strong><span id="daysDisplay">--</span> day(s)</strong><br>
+  Total Amount to Pay: <strong>₱<span id="totalDisplay">--</span></strong>
+  </p>
 
-<p>
-Computed Interest Rate: <strong><span id="rateDisplay">--</span>%</strong><br>
-Loan Duration: <strong><span id="daysDisplay">--</span> day(s)</strong><br>
-Total Amount to Pay: <strong>₱<span id="totalDisplay">--</span></strong>
-</p>
+  <p>
+  I agree to pay the total amount on or before 
+  <input class="input" id="dop" type="date"> via GCash account 
+  <input class="input" id="gcash" placeholder="GCash Number">.
+  </p>
 
-<p>
-I agree to pay the total amount on or before 
-<input class="input" id="dop" type="date"> via GCash account 
-<input class="input" id="gcash">.
-</p>
+  <p>
+  Purpose: <input class="input" id="reason" style="width:300px;" placeholder="Reason for Loan">
+  </p>
 
-<p>
-Purpose: <input class="input" id="reason" style="width:300px;">
-</p>
+  <p>
+  Valid ID: <input class="input" id="idtype" placeholder="e.g., Driver's License">  
+  ID Number: <input class="input" id="idnumber" placeholder="ID Number">
+  </p>
 
-<p>
-Valid ID: <input class="input" id="idtype" placeholder="e.g., Student ID">  
-ID Number: <input class="input" id="idnumber">
-</p>
+  <br>
+  <p>I fully understand that failure to pay may result in collection actions and lawful reporting.</p>
+  <p>I confirm all details are true and I agree to all terms stated.</p>
 
-<br>
-
-<p>I confirm all details are true and agree to terms.</p>
-
-<br>
-
-<p>Signature:</p>
-<canvas id="signature-pad"></canvas>
-<button class="btn" onclick="clearSign()">Clear</button>
-
+  <br><br>
+  <p>Borrower's Signature:</p>
+  <div id="signature-pad-wrapper">
+    <canvas id="signature-pad"></canvas>
+    <button class="btn" id="clear-btn" style="position: absolute; right: 10px; bottom: 10px; padding: 6px 12px; font-size: 11px; margin:0;" onclick="clearSign()">Clear</button>
+  </div>
 </div>
 
 <div class="download-section">
@@ -115,114 +191,135 @@ ID Number: <input class="input" id="idnumber">
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.0/signature_pad.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-// SIGNATURE
+// --- ELEMENTS ---
+const amountInput = document.getElementById("amount");
+const dateBorrowedInput = document.getElementById("dateBorrowed");
+const dopInput = document.getElementById("dop");
+const nameInput = document.getElementById("name");
+const addressInput = document.getElementById("address");
+const boardingInput = document.getElementById("boarding");
+const phoneInput = document.getElementById("phone");
+const gcashInput = document.getElementById("gcash");
+const idtypeInput = document.getElementById("idtype");
+const idnumberInput = document.getElementById("idnumber");
+
+const rateDisplay = document.getElementById("rateDisplay");
+const daysDisplay = document.getElementById("daysDisplay");
+const totalDisplay = document.getElementById("totalDisplay");
+
+// --- SIGNATURE PAD ---
 const canvas = document.getElementById("signature-pad");
+const signaturePad = new SignaturePad(canvas, {
+  penColor: "rgb(0, 0, 139)"
+});
 
 function resizeCanvas() {
   const ratio = Math.max(window.devicePixelRatio || 1, 1);
   canvas.width = canvas.offsetWidth * ratio;
   canvas.height = canvas.offsetHeight * ratio;
   canvas.getContext("2d").scale(ratio, ratio);
-}
-window.onload = resizeCanvas;
-
-const signaturePad = new SignaturePad(canvas);
-
-function clearSign() {
   signaturePad.clear();
 }
+window.addEventListener("load", resizeCanvas);
+function clearSign() { signaturePad.clear(); }
 
-// CALCULATION
+// --- CALCULATION ---
 function calculateLoan() {
-  const amountVal = parseFloat(amount.value);
-  const start = new Date(dateBorrowed.value);
-  const end = new Date(dop.value);
+  const amount = parseFloat(amountInput.value);
+  const start = new Date(dateBorrowedInput.value);
+  const end = new Date(dopInput.value);
 
-  if (!amountVal || !dateBorrowed.value || !dop.value) return;
+  if (!amount || isNaN(start) || isNaN(end)) return;
 
-  const days = Math.ceil((end - start)/(1000*60*60*24));
+  const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+  if (days < 1 || days > 5) {
+    daysDisplay.innerText = days < 1 ? "Error" : "Max 5 days";
+    return;
+  }
 
   let rate = 0;
+  if (amount >= 100 && amount <= 799) rate = [0, 0.15, 0.25, 0.35, 0.45, 0.55][days];
+  else if (amount >= 800 && amount <= 1499) rate = [0, 0.15, 0.25, 0.33, 0.41, 0.50][days];
+  else if (amount >= 1500 && amount <= 2999) rate = [0, 0.18, 0.27, 0.33, 0.39, 0.45][days];
+  else if (amount >= 3000) rate = [0, 0.18, 0.25, 0.30, 0.35, 0.40][days];
 
-  if (amountVal >= 100 && amountVal <= 799) {
-    rate = [0,0.15,0.25,0.35,0.45,0.55][days];
-  } else if (amountVal <= 1499) {
-    rate = [0,0.15,0.25,0.33,0.41,0.50][days];
-  } else if (amountVal <= 2999) {
-    rate = [0,0.18,0.27,0.33,0.39,0.45][days];
-  } else {
-    rate = [0,0.18,0.25,0.30,0.35,0.40][days];
-  }
-
-  const total = amountVal + (amountVal * rate);
-
-  rateDisplay.innerText = (rate*100).toFixed(0);
-  totalDisplay.innerText = total.toFixed(2);
+  rateDisplay.innerText = (rate * 100).toFixed(0);
   daysDisplay.innerText = days;
+  totalDisplay.innerText = (amount + (amount * rate)).toFixed(2);
 }
 
-["amount","dateBorrowed","dop"].forEach(id=>{
-  document.getElementById(id).addEventListener("input", calculateLoan);
-});
+[amountInput, dateBorrowedInput, dopInput].forEach(i => i.addEventListener("input", calculateLoan));
 
-// PDF FIXED
+// --- DOWNLOADS ---
 async function downloadPDF() {
-  const { PDFDocument } = PDFLib;
-  const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([612,1008]);
+  try {
+    const { PDFDocument, rgb } = PDFLib;
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([612, 936]); // Legal-ish size
 
-  const text = `LendsbyV Loan Agreement
-Name: ${name.value}
-Amount: ₱${amount.value}
-Interest: ${rateDisplay.innerText}%
-Total: ₱${totalDisplay.innerText}
-Days: ${daysDisplay.innerText}
-Due: ${dop.value}`;
+    const content = `
+      LENDSBYV LOAN AGREEMENT
+      -----------------------------------------
+      Borrower: ${nameInput.value}
+      Address: ${addressInput.value}
+      Contact: ${phoneInput.value}
+      
+      Loan Amount: PHP ${amountInput.value}
+      Date Borrowed: ${dateBorrowedInput.value}
+      Due Date: ${dopInput.value}
+      Interest Rate: ${rateDisplay.innerText}%
+      Total to Pay: PHP ${totalDisplay.innerText}
+      
+      GCash for Payment: ${gcashInput.value}
+      ID Provided: ${idtypeInput.value} (${idnumberInput.value})
+      
+      I confirm all details are true and agree to all terms.
+    `;
 
-  page.drawText(text, { x:50, y:900, size:12 });
+    page.drawText(content, { x: 50, y: 850, size: 12, lineHeight: 15 });
 
-  if (!signaturePad.isEmpty()) {
-    const sigBytes = await fetch(signaturePad.toDataURL()).then(r=>r.arrayBuffer());
-    const img = await pdfDoc.embedPng(sigBytes);
-    page.drawImage(img, { x:50, y:150, width:200, height:80 });
+    if (!signaturePad.isEmpty()) {
+      const sigData = signaturePad.toDataURL("image/png");
+      const sigImg = await pdfDoc.embedPng(sigData);
+      page.drawImage(sigImg, { x: 50, y: 550, width: 200, height: 80 });
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "Loan_Agreement.pdf";
+    link.click();
+  } catch (e) {
+    alert("Error generating PDF. Please try PNG.");
   }
-
-  const blob = new Blob([await pdfDoc.save()], {type:"application/pdf"});
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "Loan.pdf";
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
 }
 
-// PNG FIXED
 function downloadPNG() {
   document.body.classList.add("downloading");
+  
+  // Ensure typed text is visible in the canvas capture
+  const inputs = document.querySelectorAll('input');
+  inputs.forEach(input => input.setAttribute('value', input.value));
 
-  html2canvas(document.getElementById("contract"), {scale:2})
-  .then(canvas=>{
-    const link = document.createElement("a");
-    link.download = "Loan.png";
-    link.href = canvas.toDataURL();
-
-    document.body.classList.remove("downloading");
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  })
-  .catch(()=>{
-    document.body.classList.remove("downloading");
-    alert("Download failed");
-  });
+  setTimeout(() => {
+    html2canvas(document.getElementById("contract"), {
+      scale: 2,
+      backgroundColor: "#fefaf1",
+      useCORS: true
+    }).then(canvas => {
+      const link = document.createElement("a");
+      link.download = `Loan_Snapshot_${nameInput.value || 'Client'}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      document.body.classList.remove("downloading");
+    });
+  }, 100);
 }
 </script>
-
 </body>
 </html>
