@@ -71,10 +71,6 @@ p {
   margin-bottom: 5px;
 }
 
-input[type="date"].input {
-  color: #444;
-}
-
 strong {
   font-family: Arial, sans-serif;
   color: #6a1a1a;
@@ -93,7 +89,16 @@ strong {
   width: 100%;
   height: 100%;
   background: #fdfdfd;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Timestamp Styling */
+.timestamp {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #8c7b65;
+  text-align: right;
+  margin-top: 20px;
+  font-style: italic;
 }
 
 .btn {
@@ -110,9 +115,8 @@ strong {
   color: #fff;
   border-radius: 30px;
   background: linear-gradient(145deg, #a38b69, #7e694f);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2), inset 0 2px 3px rgba(255,255,255,0.1);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
   transition: all 0.2s ease;
-  position: relative;
 }
 
 .btn:hover {
@@ -125,13 +129,15 @@ strong {
   margin-top: 40px;
 }
 
-/* Hide buttons during capture/print */
-@media print {
-  .btn, .download-section { display: none !important; }
+/* Logic for Hiding Buttons during Capture */
+body.downloading .btn, 
+body.downloading .download-section {
+  visibility: hidden !important;
+  opacity: 0 !important;
 }
 
-body.downloading .btn {
-  display: none !important;
+@media print {
+  .btn, .download-section { display: none !important; }
 }
 </style>
 </head>
@@ -183,6 +189,8 @@ body.downloading .btn {
     <canvas id="signature-pad"></canvas>
     <button class="btn" id="clear-btn" style="position: absolute; right: 10px; bottom: 10px; padding: 6px 12px; font-size: 11px; margin:0;" onclick="clearSign()">Clear</button>
   </div>
+
+  <div class="timestamp" id="digitalTimestamp"></div>
 </div>
 
 <div class="download-section">
@@ -196,26 +204,24 @@ body.downloading .btn {
 
 <script>
 // --- ELEMENTS ---
+const nameInput = document.getElementById("name");
 const amountInput = document.getElementById("amount");
 const dateBorrowedInput = document.getElementById("dateBorrowed");
 const dopInput = document.getElementById("dop");
-const nameInput = document.getElementById("name");
-const addressInput = document.getElementById("address");
-const boardingInput = document.getElementById("boarding");
-const phoneInput = document.getElementById("phone");
-const gcashInput = document.getElementById("gcash");
-const idtypeInput = document.getElementById("idtype");
-const idnumberInput = document.getElementById("idnumber");
-
 const rateDisplay = document.getElementById("rateDisplay");
 const daysDisplay = document.getElementById("daysDisplay");
 const totalDisplay = document.getElementById("totalDisplay");
 
+// --- INITIALIZE TIMESTAMP ---
+function updateTimestamp() {
+    const now = new Date();
+    document.getElementById("digitalTimestamp").innerText = "Digital Record Generated: " + now.toLocaleString();
+}
+updateTimestamp();
+
 // --- SIGNATURE PAD ---
 const canvas = document.getElementById("signature-pad");
-const signaturePad = new SignaturePad(canvas, {
-  penColor: "rgb(0, 0, 139)"
-});
+const signaturePad = new SignaturePad(canvas, { penColor: "rgb(0, 0, 139)" });
 
 function resizeCanvas() {
   const ratio = Math.max(window.devicePixelRatio || 1, 1);
@@ -232,93 +238,63 @@ function calculateLoan() {
   const amount = parseFloat(amountInput.value);
   const start = new Date(dateBorrowedInput.value);
   const end = new Date(dopInput.value);
-
   if (!amount || isNaN(start) || isNaN(end)) return;
-
   const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-  if (days < 1 || days > 5) {
-    daysDisplay.innerText = days < 1 ? "Error" : "Max 5 days";
-    return;
-  }
-
+  if (days < 1 || days > 5) { daysDisplay.innerText = "Error"; return; }
   let rate = 0;
   if (amount >= 100 && amount <= 799) rate = [0, 0.15, 0.25, 0.35, 0.45, 0.55][days];
   else if (amount >= 800 && amount <= 1499) rate = [0, 0.15, 0.25, 0.33, 0.41, 0.50][days];
   else if (amount >= 1500 && amount <= 2999) rate = [0, 0.18, 0.27, 0.33, 0.39, 0.45][days];
   else if (amount >= 3000) rate = [0, 0.18, 0.25, 0.30, 0.35, 0.40][days];
-
   rateDisplay.innerText = (rate * 100).toFixed(0);
   daysDisplay.innerText = days;
   totalDisplay.innerText = (amount + (amount * rate)).toFixed(2);
 }
-
 [amountInput, dateBorrowedInput, dopInput].forEach(i => i.addEventListener("input", calculateLoan));
 
-// --- DOWNLOADS ---
+// --- PDF DOWNLOAD ---
 async function downloadPDF() {
-  try {
-    const { PDFDocument, rgb } = PDFLib;
-    const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([612, 936]); // Legal-ish size
-
-    const content = `
-      LENDSBYV LOAN AGREEMENT
-      -----------------------------------------
-      Borrower: ${nameInput.value}
-      Address: ${addressInput.value}
-      Contact: ${phoneInput.value}
-      
-      Loan Amount: PHP ${amountInput.value}
-      Date Borrowed: ${dateBorrowedInput.value}
-      Due Date: ${dopInput.value}
-      Interest Rate: ${rateDisplay.innerText}%
-      Total to Pay: PHP ${totalDisplay.innerText}
-      
-      GCash for Payment: ${gcashInput.value}
-      ID Provided: ${idtypeInput.value} (${idnumberInput.value})
-      
-      I confirm all details are true and agree to all terms.
-    `;
-
-    page.drawText(content, { x: 50, y: 850, size: 12, lineHeight: 15 });
-
-    if (!signaturePad.isEmpty()) {
-      const sigData = signaturePad.toDataURL("image/png");
-      const sigImg = await pdfDoc.embedPng(sigData);
-      page.drawImage(sigImg, { x: 50, y: 550, width: 200, height: 80 });
-    }
-
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: "application/pdf" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "Loan_Agreement.pdf";
-    link.click();
-  } catch (e) {
-    alert("Error generating PDF. Please try PNG.");
+  const { PDFDocument } = PDFLib;
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([612, 936]);
+  const content = `LENDSBYV LOAN AGREEMENT\n\nBorrower: ${nameInput.value}\nLoan: PHP ${amountInput.value}\nDue: ${dopInput.value}\nTotal: PHP ${totalDisplay.innerText}\n\n${document.getElementById("digitalTimestamp").innerText}`;
+  page.drawText(content, { x: 50, y: 850, size: 12 });
+  if (!signaturePad.isEmpty()) {
+    const sigImg = await pdfDoc.embedPng(signaturePad.toDataURL());
+    page.drawImage(sigImg, { x: 50, y: 650, width: 200, height: 80 });
   }
+  const pdfBytes = await pdfDoc.save();
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([pdfBytes]));
+  link.download = "Agreement.pdf";
+  link.click();
 }
 
+// --- PNG DOWNLOAD (FIXED) ---
 function downloadPNG() {
-  document.body.classList.add("downloading");
+  // Sync values so they show up in the image
+  document.querySelectorAll('input').forEach(i => i.setAttribute('value', i.value));
   
-  // Ensure typed text is visible in the canvas capture
-  const inputs = document.querySelectorAll('input');
-  inputs.forEach(input => input.setAttribute('value', input.value));
+  // Hide buttons
+  document.body.classList.add("downloading");
 
+  // Small delay to let CSS update
   setTimeout(() => {
     html2canvas(document.getElementById("contract"), {
-      scale: 2,
+      scale: 3, // High Quality
       backgroundColor: "#fefaf1",
-      useCORS: true
+      useCORS: true,
+      logging: false
     }).then(canvas => {
       const link = document.createElement("a");
-      link.download = `Loan_Snapshot_${nameInput.value || 'Client'}.png`;
+      link.download = `LendsbyV_${nameInput.value || 'Agreement'}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
+      
+      // Bring buttons back
       document.body.classList.remove("downloading");
     });
-  }, 100);
+  }, 200); 
 }
 </script>
 </body>
