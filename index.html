@@ -2,243 +2,441 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LendsbyV Loan Agreement</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
+<title>LendsbyV Loan Agreement - App Edition</title>
 <style>
-:root {
-    --paper: #fefaf1;
-    --ink: #2c1f0d;
-    --accent: #a38b69;
-    --bubbly: linear-gradient(145deg, #a38b69, #7e694f);
-}
-
+/* -- Reset and Global Stylings -- */
 body {
-    background: #d1d1d1;
-    font-family: 'Libre Baskerville', serif;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: var(--ink);
+  /* Using a subtle paper grain texture instead of a flat color */
+  background: #f0f0f0 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4uRkAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAlQTFRF8fHxAAAANvb6YwAAAAn0Uk5T/////////+M27lYAAAAWElEQVR42mJgwAQMDIxADADEDIQMjEAAMQgAMQgYmJgAEC4AMTAAEYgAMQgYmJgAEC4AMTAAEYgAMQgYmJgAEC4AMTAAEYgAMQgYmJgAEC4AMTAAEYgAMDAwAALwAEM4AEMAAAAASUVORK5CYII=') repeat;
+  margin: 0;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
-/* Document Container */
+/* -- The Main Document Container -- */
 .container {
-    max-width: 800px;
-    background: var(--paper);
-    padding: 60px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-    border-radius: 4px; /* Classic slight round */
-    position: relative;
-    border: 1px solid #d4c3a1;
-    margin-bottom: 20px;
+  max-width: 820px;
+  margin: auto;
+  /* Soft aged cream/sepia tone */
+  background-color: #fefaf1;
+  padding: 60px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #e0d0b0;
 }
 
-/* Header Stylings */
-h1 { 
-    text-align: center; 
-    font-size: 38px; 
-    margin-bottom: 5px; 
-    letter-spacing: 4px;
-    font-weight: bold;
-}
-h2 { 
-    text-align: center; 
-    font-size: 14px; 
-    text-transform: uppercase; 
-    letter-spacing: 2px; 
-    margin-bottom: 40px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 15px;
+/* Add a very light overall "aged paper fold" background detail */
+.container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png'); /* A free pattern from transparenttextures.com */
+  opacity: 0.2;
+  pointer-events: none; /* Let clicks pass through */
 }
 
-/* Input Styles - Styled to look like Handwriting */
+/* -- Typography -- */
+/* Using a classic font that feels like an old book or document */
+h1 {
+  font-family: 'Times New Roman', Times, serif; /* Main document text */
+  text-align: center;
+  font-size: 32px;
+  margin-top: 0;
+  color: #3e2e1e;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+h2 {
+  font-family: 'Courier New', Courier, monospace; /* To feel slightly more technical and 'loaned' */
+  text-align: center;
+  font-size: 20px;
+  color: #5d4a36;
+  margin-bottom: 30px;
+}
+
+p {
+  line-height: 1.6;
+  color: #2c1f0d;
+}
+
+/* -- Inputs: Styled to look like handwritten lines -- */
 .input {
-    border: none;
-    border-bottom: 1px solid var(--accent);
-    background: transparent;
-    font-family: 'Courier New', Courier, monospace; /* Handwriting feel */
-    font-size: 17px;
-    font-weight: bold;
-    padding: 2px 5px;
-    color: #00008b; /* Dark Blue Ink */
-    outline: none;
+  border: none;
+  border-bottom: 2px solid #a38b69; /* Soft brown-gold line */
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  color: #000;
+  width: 190px;
+  padding: 2px 5px;
+  margin-bottom: 5px;
+}
+
+/* Specific styling for date inputs */
+input[type="date"].input {
+  color: #444; /* Standard date text color */
+}
+
+/* -- Displays -- */
+strong {
+  font-family: Arial, sans-serif;
+  color: #6a1a1a;
+}
+
+/* -- The Signature Pad Space -- */
+#signature-pad-wrapper {
+  margin-top: 15px;
+  position: relative;
+  width: 100%;
+  height: 150px;
 }
 
 #signature-pad {
-    border: 1px solid var(--accent);
-    width: 100%;
-    height: 140px;
-    background: #fff;
-    cursor: crosshair;
+  border: 1px solid #c7b08b;
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  background: #fdfdfd;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* Bubbly App Buttons */
+/* The space for the 'signature' has a slight textured background */
+#signature-pad-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* -- The "Bubbly" App-style Buttons -- */
 .btn {
-    font-family: 'Poppins', sans-serif;
-    padding: 14px 30px;
-    cursor: pointer;
-    border: none;
-    border-radius: 50px;
-    background: var(--bubbly);
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 6px 15px rgba(163, 139, 105, 0.4);
-    transition: 0.3s;
-    text-transform: uppercase;
-    font-size: 13px;
+  margin-top: 15px;
+  margin-right: 10px;
+  padding: 12px 25px;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+  border-radius: 30px; /* Bubbly shape */
+  background: linear-gradient(145deg, #a38b69, #7e694f); /* Smooth brown/gold gradient */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2), inset 0 2px 3px rgba(255,255,255,0.1);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-.btn:active { transform: translateY(1px); }
-
-/* Download Logic: Hides buttons in the final PNG */
-.downloading .btn, .downloading .clear-btn { display: none !important; }
-
-.clear-btn {
-    background: #eee;
-    color: #666;
-    padding: 5px 15px;
-    font-size: 11px;
-    margin-top: 5px;
-    border-radius: 20px;
+/* Hover effect for buttons: grow and brighten slightly */
+.btn:hover {
+  background: linear-gradient(145deg, #bd9f7c, #9c8260);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.25), inset 0 2px 3px rgba(255,255,255,0.1);
 }
+
+/* Active state effect for buttons: press down slightly */
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Special styling for the 'Download' section */
+.download-section {
+  text-align: right;
+  margin-top: 40px;
+}
+
+/* -- The Key to No Buttons in Download: -- */
+/* When the PNG is taken, a class "downloading" is added temporarily to the body. We hide all elements with .btn inside it. */
+@media print {
+  /* This rule applies for PDF download */
+  .btn, .download-section, #signature-pad-wrapper::after {
+    display: none !important;
+  }
+}
+
+/* This rule applies for PNG download, triggered by the JavaScript */
+body.downloading .btn {
+  display: none !important;
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="container" id="contract">
-    <h1>LENDSBYV</h1>
-    <h2>OFFICIAL LOAN AGREEMENT</h2>
 
-    <p>Date Borrowed: <input class="input" id="dateBorrowed" type="date"></p>
+<h1>LendsbyV</h1>
+<h2>LOAN AGREEMENT</h2>
 
-    <p>
-        I, <input class="input" id="name" placeholder="Full Name" style="width: 250px;">, residing at 
-        <input class="input" id="address" placeholder="Residential Address" style="width: 300px;">, 
-        staying at boarding house <input class="input" id="boarding" placeholder="House Name">, 
-        with contact number <input class="input" id="phone" placeholder="Contact No.">, 
-        acknowledge receiving the amount of ₱<input class="input" id="amount" type="number" placeholder="0.00"> from LendsbyV.
-    </p>
+<p>Date Borrowed: <input class="input" id="dateBorrowed" type="date"></p>
 
-    <p>
-        Loan Duration: <strong><span id="daysDisplay">0</span> day(s)</strong><br>
-        Computed Interest Rate: <strong><span id="rateDisplay">0</span>%</strong><br>
-        <strong>Total Amount to be Paid: ₱<span id="totalDisplay">0.00</span></strong>
-    </p>
+<p>
+I, <input class="input" id="name" placeholder="Full Name">, residing at 
+<input class="input" id="address" placeholder="Residential Address">, staying at boarding house 
+<input class="input" id="boarding" placeholder="Name of House (if applicable)">, with contact number 
+<input class="input" id="phone" placeholder="Phone Number">, acknowledge receiving ₱
+<input class="input" id="amount" type="number" step="100" placeholder="Loan Amount"> from LendsbyV.
+</p>
 
-    <p>
-        I agree to settle the total amount on or before 
-        <input class="input" id="dop" type="date"> via GCash number 
-        <input class="input" id="gcash" placeholder="GCash Account No.">.
-    </p>
+<p>
+Computed Interest Rate: <strong><span id="rateDisplay">--</span>%</strong><br>
+Loan Duration: <strong><span id="daysDisplay">--</span> day(s)</strong><br>
+Total Amount to Pay: <strong>₱<span id="totalDisplay">--</span></strong>
+</p>
 
-    <p>Purpose of Loan: <input class="input" id="reason" style="width: 350px;" placeholder="Reason"></p>
-    
-    <p>
-        Valid ID presented: <input class="input" id="idtype" value="Student ID"> 
-        ID Number: <input class="input" id="idnumber" placeholder="ID Number">
-    </p>
+<p>
+I agree to pay the total amount on or before 
+<input class="input" id="dop" type="date"> via GCash account 
+<input class="input" id="gcash" placeholder="GCash Number">.
+</p>
 
-    <br>
-    <p style="font-size: 13px; line-height: 1.5;">
-        I fully understand that failure to pay the agreed amount on the specified date may result in collection actions. 
-        I confirm that all information provided is true and correct.
-    </p>
-    
-    <br>
-    <p>Borrower's Signature:</p>
-    <canvas id="signature-pad"></canvas>
-    <button class="clear-btn" onclick="signaturePad.clear()">Clear Signature</button>
+<p>
+Purpose: <input class="input" id="reason" style="width:300px;" placeholder="Reason for Loan">
+</p>
+
+<p>
+Valid ID: <input class="input" id="idtype" placeholder="e.g., Driver's License">  
+ID Number: <input class="input" id="idnumber" placeholder="ID Number">
+</p>
+
+<br>
+
+<p>
+I fully understand that failure to pay may result in collection actions and lawful reporting of unpaid obligations.
+</p>
+
+<p>
+I confirm all details are true and I agree to all terms stated.
+</p>
+
+<br><br>
+
+<p>Borrower's Signature:</p>
+<div id="signature-pad-wrapper">
+  <canvas id="signature-pad"></canvas>
+  <button class="btn" style="position: absolute; right: 10px; bottom: 10px; padding: 6px 12px; font-size: 11px; margin-top: 0; margin-right: 0;" onclick="clearSign()">Clear</button>
 </div>
 
-<div class="actions">
-    <button class="btn" id="dlBtn" onclick="downloadPNG()">Download Document (PNG)</button>
+</div>
+<div class="download-section">
+  <button class="btn" onclick="downloadPDF()">Download PDF</button>
+  <button class="btn" onclick="downloadPNG()">Download PNG</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.0/signature_pad.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-// --- SIGNATURE PAD ---
+// --- SIGNATURE PAD SETUP ---
 const canvas = document.getElementById("signature-pad");
+
+// Adjust canvas dimensions for clarity
+function resizeCanvas() {
+  const ratio = Math.max(window.devicePixelRatio || 1, 1);
+  canvas.width = canvas.offsetWidth * ratio;
+  canvas.height = canvas.offsetHeight * ratio;
+  canvas.getContext("2d").scale(ratio, ratio);
+}
+// SignaturePad works better when the canvas size is correct initially.
+// We call it after a tiny delay, once the layout is settled.
+window.onload = () => {
+  resizeCanvas();
+  signaturePad.clear(); // Initialize to ensure it's empty
+};
+window.addEventListener("resize", resizeCanvas);
+
 const signaturePad = new SignaturePad(canvas, {
-    penColor: "rgb(0, 0, 128)" // Navy blue ink
+  minWidth: 1.2,
+  maxWidth: 2.2,
+  penColor: "rgb(0, 0, 139)" // Classic dark blue ink feel
 });
 
-// Fix canvas resolution
-function resizeCanvas() {
-    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    canvas.getContext("2d").scale(ratio, ratio);
-    signaturePad.clear();
+function clearSign() {
+  signaturePad.clear();
 }
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
 
-// --- LOAN CALCULATION ---
-function calculate() {
-    const amt = parseFloat(document.getElementById("amount").value) || 0;
-    const start = new Date(document.getElementById("dateBorrowed").value);
-    const end = new Date(document.getElementById("dop").value);
-    
-    if (amt > 0 && !isNaN(start.getTime()) && !isNaN(end.getTime())) {
-        const diffTime = end - start;
-        const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (days > 0 && days <= 5) {
-            let rate = 0;
-            // Logic based on your provided tiers
-            if (amt < 800) rate = (days === 5) ? 0.55 : 0.15 + (days-1)*0.10;
-            else if (amt < 1500) rate = (days === 5) ? 0.50 : 0.15 + (days-1)*0.08;
-            else if (amt < 3000) rate = (days === 5) ? 0.45 : 0.18 + (days-1)*0.07;
-            else rate = (days === 5) ? 0.40 : 0.18 + (days-1)*0.06;
+// --- LOAN CALCULATION LOGIC ---
+const amountInput = document.getElementById("amount");
+const dateBorrowedInput = document.getElementById("dateBorrowed");
+const dopInput = document.getElementById("dop");
 
-            document.getElementById("daysDisplay").innerText = days;
-            document.getElementById("rateDisplay").innerText = Math.round(rate * 100);
-            document.getElementById("totalDisplay").innerText = (amt + (amt * rate)).toLocaleString('en-PH', {minimumFractionDigits: 2});
-        }
-    }
+const rateDisplay = document.getElementById("rateDisplay");
+const daysDisplay = document.getElementById("daysDisplay");
+const totalDisplay = document.getElementById("totalDisplay");
+
+function calculateLoan() {
+  const amount = parseFloat(amountInput.value);
+  const startStr = dateBorrowedInput.value;
+  const endStr = dopInput.value;
+
+  if (!amount || !startStr || !endStr) {
+    rateDisplay.innerText = "--";
+    totalDisplay.innerText = "--";
+    daysDisplay.innerText = "--";
+    return;
+  }
+
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+
+  // Calculate days difference (inclusive of both days)
+  const timeDiff = end - start;
+  const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+  // Validate loan duration
+  if (days < 1) {
+    daysDisplay.innerText = "Error (negative days)";
+    rateDisplay.innerText = "Error";
+    totalDisplay.innerText = "Error";
+    return;
+  }
+  if (days > 5) {
+    daysDisplay.innerText = "Max 5 days";
+    rateDisplay.innerText = "Error";
+    totalDisplay.innerText = "Error";
+    return;
+  }
+
+  // Interest Rates Table (matching amount and days)
+  let rate = 0;
+
+  if (amount >= 100 && amount <= 799) {
+    const ratesByDay = [0, 0.15, 0.25, 0.35, 0.45, 0.55];
+    rate = ratesByDay[days];
+  } else if (amount >= 800 && amount <= 1499) {
+    const ratesByDay = [0, 0.15, 0.25, 0.33, 0.41, 0.50];
+    rate = ratesByDay[days];
+  } else if (amount >= 1500 && amount <= 2999) {
+    const ratesByDay = [0, 0.18, 0.27, 0.33, 0.39, 0.45];
+    rate = ratesByDay[days];
+  } else if (amount >= 3000) {
+    const ratesByDay = [0, 0.18, 0.25, 0.30, 0.35, 0.40];
+    rate = ratesByDay[days];
+  }
+
+  const total = amount + (amount * rate);
+
+  // Update Display Fields
+  // Convert rate back to percentage for display (e.g., 0.15 -> 15%)
+  rateDisplay.innerText = (rate * 100).toFixed(0);
+  totalDisplay.innerText = total.toFixed(2);
+  daysDisplay.innerText = days;
 }
-document.getElementById("amount").oninput = calculate;
-document.getElementById("dop").onchange = calculate;
-document.getElementById("dateBorrowed").onchange = calculate;
 
-// --- DOWNLOAD FUNCTION ---
+// Add event listeners to input fields
+[amountInput, dateBorrowedInput, dopInput].forEach(input => {
+  input.addEventListener("input", calculateLoan);
+});
+
+// Initialize calculation if fields are pre-filled (useful if user comes back)
+calculateLoan();
+
+
+// --- DOWNLOAD FUNCTIONS ---
+
+// 1. PDF DOWNLOAD (LEGAL SIZE)
+async function downloadPDF() {
+  const { PDFDocument, rgb } = PDFLib;
+  const pdfDoc = await PDFDocument.create();
+
+  // Create standard page size (Letter-like), and modify to feel professional (Legal size)
+  // US Legal Size: 8.5" x 14" -> 612 x 1008 pts
+  const page = pdfDoc.addPage([612, 1008]);
+
+  // For a purely browser-side HTML -> PDF download that *perfectly* captures the look,
+  // html2canvas-based conversion is actually safer for style preservation than manually drawing text on pdfDoc.
+  // This approach here preserves the text content but loses much of the advanced CSS styling.
+
+  // Alternative PDF approach (preserve advanced CSS look by drawing snapshot on PDF):
+  // (We use a very basic text structure here as requested, preserving functionality)
+
+  const text = `
+LendsbyV Loan Agreement
+
+I, ${name.value} residing at ${address.value}, stay at boarding house ${boarding.value}, with contact number ${phone.value},
+acknowledge receiving ₱${amount.value} from LendsbyV.
+
+Loan Details:
+- Date Borrowed: ${dateBorrowedInput.value}
+- Interest: ${rateDisplay.innerText}%
+- Duration: ${daysDisplay.innerText} day(s)
+- Due Date: ${dopInput.value}
+
+I agree to pay the total amount of ₱${totalDisplay.innerText} via GCash account ${gcash.value}.
+
+Valid ID type: ${idtype.value} (${idnumber.value})
+
+I understand failure to pay may result in lawful actions.
+By signing, I confirm all details are true.
+  `;
+
+  page.drawText(text, { x: 50, y: 920, size: 10, color: rgb(0.1, 0.1, 0.1) });
+
+  // Handle Signature Image
+  if (!signaturePad.isEmpty()) {
+    const sigData = signaturePad.toDataURL("image/png");
+    const sigBytes = await fetch(sigData).then(res => res.arrayBuffer());
+    const sigImg = await pdfDoc.embedPng(sigBytes);
+
+    page.drawImage(sigImg, {
+      x: 50,
+      y: 650, // Moved up to match basic text flow
+      width: 250,
+      height: 100
+    });
+  }
+
+  // Finalize and Download
+  const pdfBytes = await pdfDoc.save();
+  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "LendsbyV_Loan_Agreement.pdf";
+  link.click();
+}
+
+// 2. PNG DOWNLOAD (EXCLUDING BUTTONS)
 function downloadPNG() {
-    const btn = document.getElementById("dlBtn");
-    const name = document.getElementById("name").value || "Borrower";
-    
-    btn.innerText = "Saving...";
-    document.body.classList.add("downloading");
+  // Key Step: Temporarily add a class to the body that the CSS will use to hide all elements with ".btn"
+  document.body.classList.add("downloading");
 
-    // Small delay to ensure the UI hides the button before snap
-    setTimeout(() => {
-        html2canvas(document.getElementById("contract"), {
-            scale: 2,
-            backgroundColor: "#fefaf1",
-            logging: false
-        }).then(canvas => {
-            const link = document.createElement("a");
-            link.download = `LendsbyV_Loan_${name}.png`;
-            link.href = canvas.toDataURL("image/png");
-            link.click();
+  const contractDiv = document.getElementById("contract");
 
-            // Cleanup
-            document.body.classList.remove("downloading");
-            btn.innerText = "Download Document (PNG)";
-        }).catch(e => {
-            alert("Download error. Please ensure you are connected to the internet.");
-            document.body.classList.remove("downloading");
-            btn.innerText = "Download Document (PNG)";
-        });
-    }, 100);
+  html2canvas(contractDiv, {
+    scale: 2, // Increases quality/resolution
+    backgroundColor: "#fefaf1", // Ensures sepia background is set in snapshot
+    logging: false, // Prevents console logs during snapshot
+    useCORS: true // Aids in capturing external images if any (e.g., textures)
+  }).then(canvas => {
+    // Convert canvas to image data
+    const link = document.createElement("a");
+    link.download = `LendsbyV_Loan_Snapshot_${name.value.split(" ")[0]}.png`;
+    link.href = canvas.toDataURL("image/png");
+
+    // Remove the temporary class so buttons reappear for the user
+    document.body.classList.remove("downloading");
+
+    // Click the link to download
+    link.click();
+  });
 }
+
 </script>
+
 </body>
 </html>
